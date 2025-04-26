@@ -3,6 +3,8 @@
 #include "agent.h"
 
 int main() {
+	system("clear");
+	srand(time(NULL));
 	init_board();
 	init_state();
 	printf("Operate first ? (yes/no)\n");

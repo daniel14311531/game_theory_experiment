@@ -81,22 +81,22 @@ void init_state() {
 			}
 		}
 	}
-	std::cout << count << "\n";
+	// std::cout << count << "\n";
 }
 
 double calc_UCT(int state, int father) {
-	if(cnt_vis[state] == 0) return DBL_MAX;
+	if(cnt_vis[state] == 0) return INT_MAX;
 	double exploitation = (double)cnt_win[state] / cnt_vis[state];
 	double exploration = C * sqrt(log(cnt_vis[father]) / cnt_vis[state]);
-	return exploitation - exploration;
+	return -exploitation + exploration;
 }
 
 int get_best_child(int u) {
-	double best = DBL_MAX;
-	int v;
+	double best = 0;
+	int v = -1;
 	for(auto nxt : edge[u]) {
 		double value_v = calc_UCT(nxt, u);
-		if(best > value_v) {
+		if(v == -1 || best < value_v) {
 			best = value_v;
 			v = nxt;
 		}
@@ -105,9 +105,8 @@ int get_best_child(int u) {
 }
 
 bool simulation(int state, bool flag = true) {
-	std::vector<int> nxt = edge[state];
-	if(nxt.size() == 0) return flag;
-	int u = nxt[rand() % (int)nxt.size()];
+	if(edge[state].size() == 0) return flag;
+	int u = edge[state][rand() % (int)edge[state].size()];
 	return simulation(u, !flag);
 }
 
@@ -118,7 +117,7 @@ std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state) 
 		std::vector<std::pair<int, int> > path = {std::make_pair(cur, 1)};
 		int u = cur, flag = 1, v;
 		for(;;) {
-			if(!cnt_vis[u]) {
+			if(!cnt_vis[u] || u == 0) {
 				for(int i = 0; i < 100; i++) {
 					++cnt_vis[u];
 					bool res = simulation(u);
