@@ -169,3 +169,72 @@ std::vector<std::vector<int>> AgentMCTS::agent_option(std::vector<std::vector<in
 	}
 	return decode_state(get_best_child(cur));
 }
+
+AgentSG::AgentSG() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		nxt_non_zero[i] = 0;
+		non_zero_prob[i] = 0;
+		edge[i].clear();
+	}
+}
+
+AgentSG::~AgentSG() = default;
+
+void AgentSG::init_state() {
+	int count = 0;
+	int full = (1 << 16) - 1;
+	sg[0] = full_state + 10;
+	for(int i = 1; i <= full; i++) {
+		std::vector<int> nxt = sub_state(i);
+		edge[i] = nxt;
+		count += nxt.size();
+		if(nxt.size() == 1 && nxt[0] == 0) {
+			sg[i] = 0;
+			continue;
+		}
+		std::set<int> cnt;
+		for(auto v : nxt) cnt.insert(sg[v]);
+		int cur = 0;
+		for(; cnt.find(cur) != cnt.end();) {
+			++cur;
+		}
+		sg[i] = cur;
+		if(sg[i] != 0) {
+			for(auto v : nxt) {
+				if(sg[v] == 0) {
+					nxt_zero[i] = v;
+				}
+				else if(sg[v] == sg[i]) {
+					nxt_non_zero[i] = v;
+				}
+			}
+		}
+	}
+	for(int i = 0; i < full; i++) {
+		int cnt0 = 0, cnt1 = 0;
+		for(auto v : edge[i]) {
+			if(sg[v] == 0) ++cnt0;
+			else ++cnt1;
+		}
+		non_zero_prob[i] = (double)cnt1 / (cnt0 + cnt1);
+
+		if(sg[i] == 0) {
+			int res = -1;
+			for(auto v : edge[i]) {
+				if(res == -1 || non_zero_prob[v] < non_zero_prob[res]) {
+					res = v;
+				}
+			}
+			nxt_non_zero[i] = res;
+		}
+	}
+}
+
+std::vector<std::vector<int>> AgentSG::agent_option(std::vector<std::vector<int>> state) {
+	int cur = encode_state(state);
+	if(sg[cur]) return decode_state(nxt_zero[cur]);
+	if(nxt_non_zero[cur]) return decode_state(nxt_non_zero[cur]);
+	return decode_state(0);
+}

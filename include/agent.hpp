@@ -51,4 +51,18 @@ public:
 	std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state) override;
 };
 
+class AgentSG : public Agent {
+protected:
+	int nxt_non_zero[full_state];
+	double non_zero_prob[full_state];
+
+public:
+	AgentSG();
+	~AgentSG();
+	// initialize the state graph
+	void init_state() override;
+	// get the next option of the agent
+	std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state) override;
+};
+
 #endif // AGENT_HPP

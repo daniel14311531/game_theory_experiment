@@ -2,13 +2,13 @@
 #include "board.hpp"
 #include "agent.hpp"
 
-int main() {
+void player_vs_computer() {
 	system("clear");
 	srand(time(NULL));
 	AgentMCTS agent_mcts;
 	init_board();
 	agent_mcts.init_state();
-	printf("Operate first ? (yes/no)\n");
+	printf("Player first ? (yes/no)\n");
 	std::string op;
 	std::cin >> op;
 	for(;;) {
@@ -41,7 +41,7 @@ int main() {
 			}
 		}
 		else {
-			printf("Agent turn:\n");
+			printf("Computer turn:\n");
 			std::vector<std::vector<int> > nxt = agent_mcts.agent_option(to_vector());
 			set_board_with_vector(nxt);
 			whose_turn = 3 - whose_turn;
@@ -51,7 +51,99 @@ int main() {
 		printf("Player win!\n");
 	}
 	else {
-		printf("Agent win!\n");
+		printf("Computer win!\n");
+	}
+}
+
+void computer_vs_computer() {
+	system("clear");
+	srand(time(NULL));
+	AgentMCTS agent_mcts;
+	AgentSG agent_sg;
+	init_board();
+	agent_mcts.init_state();
+	agent_sg.init_state();
+	printf("Computer1: AgentMCTS\n");
+	printf("Computer2: AgentSG\n");
+	printf("Computer1 first ? (yes/no)\n");
+	std::string op;
+	std::cin >> op;
+	for(;;) {
+		if(op == "yes") {
+			whose_turn = 1;
+			break;
+		}
+		if(op == "no") {
+			whose_turn = 2;
+			break;
+		}
+		system("clear");
+		printf("Computer1: AgentMCTS\n");
+		printf("Computer2: AgentSG\n");
+		printf("Computer1 first ? (yes/no)\n");
+		std::cin >> op;
+	}
+	for(; !check_end_board();) {
+		system("clear");
+		printf("Computer1: AgentMCTS\n");
+		printf("Computer2: AgentSG\n");
+		print_board();
+		if(whose_turn == 1) {
+			printf("Computer1 turn:\n");
+			std::vector<std::vector<int> > nxt = agent_mcts.agent_option(to_vector());
+			set_board_with_vector(nxt);
+			whose_turn = 3 - whose_turn;
+		}
+		else {
+			printf("Computer2 turn:\n");
+			std::vector<std::vector<int> > nxt = agent_sg.agent_option(to_vector());
+			set_board_with_vector(nxt);
+			whose_turn = 3 - whose_turn;
+		}
+	}
+	if(whose_turn == 1) {
+		printf("Computer1 win!\n");
+	}
+	else {
+		printf("Computer2 win!\n");
+	}
+}
+
+int main() {
+	std::string op;
+	printf("Player vs Computer ? (yes/no)\n");
+	std::cin >> op;
+	for(;;) {
+		if(op == "yes") {
+			break;
+		}
+		if(op == "no") {
+			break;
+		}
+		system("clear");
+		printf("Player vs Computer ? (yes/no)\n");
+		std::cin >> op;
+	}
+	if(op == "yes") {
+		player_vs_computer();
+		return 0;
+	}
+	printf("Computer vs Computer ? (yes/no)\n");
+	std::cin >> op;
+	for(;;) {
+		if(op == "yes") {
+			break;
+		}
+		if(op == "no") {
+			break;
+		}
+		system("clear");
+		printf("Computer vs Computer ? (yes/no)\n");
+		std::cin >> op;
+	}
+	if(op == "yes") {
+		computer_vs_computer();
+		return 0;
 	}
 	return 0;
 }
