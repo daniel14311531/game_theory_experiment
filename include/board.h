@@ -19,8 +19,10 @@ bool set_board(int x1, int y1, int x2, int y2);
 // Converts the board to a 2D vector representation.
 std::vector<std::vector<int>> to_vector();
 
+// Checks if the game has ended.
 bool check_end_board();
 
+// Sets the board state using a 2D vector.
 void set_board_with_vector(std::vector<std::vector<int> > state);
 
 #endif // BOARD_H

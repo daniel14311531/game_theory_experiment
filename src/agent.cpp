@@ -88,15 +88,15 @@ double calc_UCT(int state, int father) {
 	if(cnt_vis[state] == 0) return DBL_MAX;
 	double exploitation = (double)cnt_win[state] / cnt_vis[state];
 	double exploration = C * sqrt(log(cnt_vis[father]) / cnt_vis[state]);
-	return exploitation + exploration;
+	return exploitation - exploration;
 }
 
 int get_best_child(int u) {
-	double best = -INT_MAX;
+	double best = DBL_MAX;
 	int v;
 	for(auto nxt : edge[u]) {
 		double value_v = calc_UCT(nxt, u);
-		if(best < value_v) {
+		if(best > value_v) {
 			best = value_v;
 			v = nxt;
 		}

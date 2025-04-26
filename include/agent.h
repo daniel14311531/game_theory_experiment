@@ -5,7 +5,7 @@
 
 const int full_state = (1 << 16) + 10;
 const double C = 1.414;
-const int INTERATION = 1000;
+const int INTERATION = 10000;
 extern int sg[full_state], nxt_zero[full_state];
 extern std::vector<int> edge[full_state];
 
