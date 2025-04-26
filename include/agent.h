@@ -28,7 +28,7 @@ std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state);
 void init_state();
 
 // UCT function.
-double calc_UCT(int state, bool flag);
+double calc_UCT(int state, int father);
 
 // get the best child node.
 int get_best_child(int u);
