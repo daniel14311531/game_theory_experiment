@@ -1,7 +1,7 @@
-#ifndef BOARD_H
-#define BOARD_H
+#ifndef BOARD_HPP
+#define BOARD_HPP
 
-#include <vector>
+#include <bits/stdc++.h>
 
 extern int board[4][4];
 extern int whose_turn;
@@ -25,4 +25,4 @@ bool check_end_board();
 // Sets the board state using a 2D vector.
 void set_board_with_vector(std::vector<std::vector<int> > state);
 
-#endif // BOARD_H
+#endif // BOARD_HPP

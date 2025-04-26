@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "board.h"
+#include "board.hpp"
 
 int board[4][4];
 int whose_turn;

@@ -1,12 +1,13 @@
 #include <bits/stdc++.h>
-#include "board.h"
-#include "agent.h"
+#include "board.hpp"
+#include "agent.hpp"
 
 int main() {
 	system("clear");
 	srand(time(NULL));
+	AgentMCTS agent_mcts;
 	init_board();
-	init_state();
+	agent_mcts.init_state();
 	printf("Operate first ? (yes/no)\n");
 	std::string op;
 	std::cin >> op;
@@ -41,7 +42,7 @@ int main() {
 		}
 		else {
 			printf("Agent turn:\n");
-			std::vector<std::vector<int> > nxt = agent_option(to_vector());
+			std::vector<std::vector<int> > nxt = agent_mcts.agent_option(to_vector());
 			set_board_with_vector(nxt);
 			whose_turn = 3 - whose_turn;
 		}

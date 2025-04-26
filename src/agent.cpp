@@ -1,11 +1,17 @@
 #include <bits/stdc++.h>
-#include "agent.h"
+#include "agent.hpp"
 
-int sg[full_state], nxt_zero[full_state];
-std::vector<int> edge[full_state];
-int cnt_vis[full_state], cnt_win[full_state];
+Agent::Agent() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		edge[i].clear();
+	}
+}
 
-std::vector<std::vector<int> > decode_state(int state) {
+Agent::~Agent() = default;
+	
+std::vector<std::vector<int> > Agent::decode_state(int state) {
 	std::vector<int> a(16);
 	for(int i = 0; i < 16; i++)
 		a[i] = ((state >> i) & 1);
@@ -19,7 +25,7 @@ std::vector<std::vector<int> > decode_state(int state) {
 	return st;
 }
 
-int encode_state(std::vector<std::vector<int> > state) {
+int Agent::encode_state(std::vector<std::vector<int> > state) {
 	int st = 0;
 	for(int i = 0; i < 4; i++)
 		for(int j = 0; j < 4; j++)
@@ -27,7 +33,7 @@ int encode_state(std::vector<std::vector<int> > state) {
 	return st;
 }
 
-std::vector<int> sub_state(int state) {
+std::vector<int> Agent::sub_state(int state) {
 	std::vector<std::vector<int> > cur = decode_state(state), tmp;
 	std::vector<int> res;
 	for(int i = 0; i < 4; i++)
@@ -54,7 +60,7 @@ std::vector<int> sub_state(int state) {
 	return res;
 }
 
-void init_state() {
+void Agent::init_state() {
 	int count = 0;
 	int full = (1 << 16) - 1;
 	sg[0] = full_state + 10;
@@ -84,14 +90,39 @@ void init_state() {
 	// std::cout << count << "\n";
 }
 
-double calc_UCT(int state, int father) {
+std::vector<std::vector<int>> Agent::agent_option(std::vector<std::vector<int>> state) {
+	int cur = encode_state(state);
+	if(sg[cur]) return decode_state(nxt_zero[cur]);
+	// commit suiside
+	return decode_state(0);
+}
+
+AgentMCTS::AgentMCTS() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		cnt_vis[i] = 0;
+		cnt_win[i] = 0;
+		edge[i].clear();
+	}
+}
+
+AgentMCTS::~AgentMCTS() = default;
+
+double AgentMCTS::calc_UCT(int state, int father) {
 	if(cnt_vis[state] == 0) return INT_MAX;
 	double exploitation = (double)cnt_win[state] / cnt_vis[state];
 	double exploration = C * sqrt(log(cnt_vis[father]) / cnt_vis[state]);
 	return -exploitation + exploration;
 }
 
-int get_best_child(int u) {
+bool AgentMCTS::simulation(int state, bool flag = true) {
+	if(edge[state].size() == 0) return flag;
+	int u = edge[state][rand() % (int)edge[state].size()];
+	return simulation(u, !flag);
+}
+
+int AgentMCTS::get_best_child(int u) {
 	double best = 0;
 	int v = -1;
 	for(auto nxt : edge[u]) {
@@ -104,13 +135,7 @@ int get_best_child(int u) {
 	return v;
 }
 
-bool simulation(int state, bool flag = true) {
-	if(edge[state].size() == 0) return flag;
-	int u = edge[state][rand() % (int)edge[state].size()];
-	return simulation(u, !flag);
-}
-
-std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state) {
+std::vector<std::vector<int>> AgentMCTS::agent_option(std::vector<std::vector<int>> state) {
 	int cur = encode_state(state);
 	if(sg[cur]) return decode_state(nxt_zero[cur]);
 	for(int T = 0; T < INTERATION; T++) {
