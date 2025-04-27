@@ -3,7 +3,12 @@
 
 #include <bits/stdc++.h>
 
+// the count of states
 const int full_state = (1 << 16) + 10;
+
+// random seed
+extern std::random_device rd;
+extern std::mt19937 mt;
 
 class Agent {
 protected:

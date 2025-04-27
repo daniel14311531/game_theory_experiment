@@ -4,6 +4,7 @@
 This project is the experiment for the course "Introduction of Game Theory", 2025, Harbin Institute of Technology.
 
 ## Prerequisites
+- Linux
 - C++ version: >= C++11
 - cmake version: >= 3.10
 

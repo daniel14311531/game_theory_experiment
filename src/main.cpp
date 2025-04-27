@@ -2,9 +2,11 @@
 #include "board.hpp"
 #include "agent.hpp"
 
+std::random_device rd;
+std::mt19937 mt(rd());
+
 void player_vs_computer() {
 	system("clear");
-	srand(time(NULL));
 	AgentMCTS agent_mcts;
 	init_board();
 	agent_mcts.init_state();
@@ -57,7 +59,6 @@ void player_vs_computer() {
 
 void computer_vs_computer() {
 	system("clear");
-	srand(time(NULL));
 	AgentMCTS agent_mcts;
 	AgentSG agent_sg;
 	init_board();
@@ -84,7 +85,7 @@ void computer_vs_computer() {
 		std::cin >> op;
 	}
 	for(; !check_end_board();) {
-		system("clear");
+		printf("\n");
 		printf("Computer1: AgentMCTS\n");
 		printf("Computer2: AgentSG\n");
 		print_board();
@@ -101,6 +102,10 @@ void computer_vs_computer() {
 			whose_turn = 3 - whose_turn;
 		}
 	}
+	printf("\n");
+	printf("Computer1: AgentMCTS\n");
+	printf("Computer2: AgentSG\n");
+	print_board();
 	if(whose_turn == 1) {
 		printf("Computer1 win!\n");
 	}
