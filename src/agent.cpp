@@ -254,9 +254,6 @@ void AgentSG::init_state() {
 				if(sg[v] == 0) {
 					nxt_zero[i] = v;
 				}
-				else if(sg[v] == sg[i]) {
-					nxt_non_zero[i] = v;
-				}
 			}
 		}
 	}
