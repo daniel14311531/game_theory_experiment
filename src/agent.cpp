@@ -132,7 +132,7 @@ void AgentMCTS::clear() {
 }
 
 double AgentMCTS::calc_UCT(int state, int father) {
-	if(cnt_vis[state] == 0) return INT_MAX;
+	if(cnt_vis[state] == 0) return std::numeric_limits<double>::max();
 	// use more precise value
 	double exploitation = (double)cnt_win[state] / cnt_vis[state];
 	// the accurate count of visits from father to child
