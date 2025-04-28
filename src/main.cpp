@@ -7,9 +7,12 @@ std::mt19937 mt(rd());
 
 void player_vs_computer() {
 	system("clear");
-	AgentMCTS agent_mcts;
 	init_board();
+
+	static AgentMCTS agent_mcts;
+	agent_mcts.clear();
 	agent_mcts.init_state();
+
 	printf("Player first ? (yes/no)\n");
 	std::string op;
 	std::cin >> op;
@@ -59,11 +62,15 @@ void player_vs_computer() {
 
 void computer_vs_computer() {
 	system("clear");
-	AgentMCTS agent_mcts;
-	AgentSG agent_sg;
 	init_board();
+
+	static AgentMCTS agent_mcts;
+	agent_mcts.clear();
 	agent_mcts.init_state();
+	static AgentSG agent_sg;
+	agent_sg.clear();
 	agent_sg.init_state();
+	
 	printf("Computer1: AgentMCTS\n");
 	printf("Computer2: AgentSG\n");
 	printf("Computer1 first ? (yes/no)\n");

@@ -27,6 +27,8 @@ protected:
 public:
 	Agent();
 	virtual ~Agent();
+	// clear the state graph
+	virtual void clear();
 	// initialize the state graph
 	virtual void init_state();
 	// get the next option of the agent
@@ -41,6 +43,10 @@ protected:
 	const int INTERATION = 10000;
 	// number of simulations and wins
 	int cnt_vis[full_state], cnt_win[full_state];
+	// count the number of visits from the current node to a certain child
+	std::vector<int> cnt_to_child[full_state];
+	// the map between child and its id
+	std::map<int, int> child_to_id[full_state];
 
 	// UCT calculation
 	double calc_UCT(int state, int father);
@@ -52,6 +58,8 @@ protected:
 public:
 	AgentMCTS();
 	~AgentMCTS();
+	// clear the state graph
+	void clear() override;
 	// get the next option of the agent
 	std::vector<std::vector<int>> agent_option(std::vector<std::vector<int>> state) override;
 };
@@ -64,6 +72,8 @@ protected:
 public:
 	AgentSG();
 	~AgentSG();
+	// clear the state graph
+	void clear() override;
 	// initialize the state graph
 	void init_state() override;
 	// get the next option of the agent

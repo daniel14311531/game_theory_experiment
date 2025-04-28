@@ -60,6 +60,14 @@ std::vector<int> Agent::sub_state(int state) {
 	return res;
 }
 
+void Agent::clear() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		edge[i].clear();
+	}
+}
+
 void Agent::init_state() {
 	int count = 0;
 	int full = (1 << 16) - 1;
@@ -104,21 +112,38 @@ AgentMCTS::AgentMCTS() {
 		cnt_vis[i] = 0;
 		cnt_win[i] = 0;
 		edge[i].clear();
+		cnt_to_child[i].clear();
+		child_to_id[i].clear();
 	}
 }
 
 AgentMCTS::~AgentMCTS() = default;
 
+void AgentMCTS::clear() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		cnt_vis[i] = 0;
+		cnt_win[i] = 0;
+		edge[i].clear();
+		cnt_to_child[i].clear();
+		child_to_id[i].clear();
+	}
+}
+
 double AgentMCTS::calc_UCT(int state, int father) {
 	if(cnt_vis[state] == 0) return INT_MAX;
+	// use more precise value
 	double exploitation = (double)cnt_win[state] / cnt_vis[state];
-	double exploration = C * sqrt(log(cnt_vis[father]) / cnt_vis[state]);
+	// the accurate count of visits from father to child
+	int acc_father_to_child = cnt_to_child[father][child_to_id[father][state]];
+	double exploration = C * sqrt(log(cnt_vis[father]) / acc_father_to_child);
 	return -exploitation + exploration;
 }
 
 bool AgentMCTS::simulation(int state, bool flag = true) {
 	if(edge[state].size() == 0) return flag;
-	int u = edge[state][rand() % (int)edge[state].size()];
+	int u = edge[state][abs((int)mt()) % (int)edge[state].size()];
 	return simulation(u, !flag);
 }
 
@@ -143,6 +168,12 @@ std::vector<std::vector<int>> AgentMCTS::agent_option(std::vector<std::vector<in
 		int u = cur, flag = 1, v;
 		for(;;) {
 			if(!cnt_vis[u] || u == 0) {
+				if(cnt_to_child[u].size() != edge[u].size()) {
+					cnt_to_child[u].resize(edge[u].size());
+					for(int i = 0; i < (int)cnt_to_child[u].size(); i++) {
+						child_to_id[u][edge[u][i]] = i;
+					}
+				}
 				for(int i = 0; i < 100; i++) {
 					++cnt_vis[u];
 					bool res = simulation(u);
@@ -150,7 +181,14 @@ std::vector<std::vector<int>> AgentMCTS::agent_option(std::vector<std::vector<in
 						++cnt_win[u];
 					}
 				}
-				for(auto p : path) {
+				// The theoretical value of cnt_vis[u] should be 100
+				for(int i = 0; i < (int)path.size(); i++) {
+					std::pair<int, int> p = path[i];
+					if(i) {
+						int father = path[i - 1].first;
+						int son = path[i].first;
+						cnt_to_child[father][child_to_id[father][son]] += cnt_vis[u];
+					}
 					if(p.first == u) continue;
 					cnt_vis[p.first] += cnt_vis[u];
 					if(flag == p.second) {
@@ -182,6 +220,16 @@ AgentSG::AgentSG() {
 
 AgentSG::~AgentSG() = default;
 
+void AgentSG::clear() {
+	for(int i = 0; i < full_state; i++) {
+		sg[i] = 0;
+		nxt_zero[i] = 0;
+		nxt_non_zero[i] = 0;
+		non_zero_prob[i] = 0;
+		edge[i].clear();
+	}
+}
+
 void AgentSG::init_state() {
 	int count = 0;
 	int full = (1 << 16) - 1;
@@ -212,7 +260,7 @@ void AgentSG::init_state() {
 			}
 		}
 	}
-	for(int i = 0; i < full; i++) {
+	for(int i = 0; i <= full; i++) {
 		int cnt0 = 0, cnt1 = 0;
 		for(auto v : edge[i]) {
 			if(sg[v] == 0) ++cnt0;
@@ -227,6 +275,7 @@ void AgentSG::init_state() {
 					res = v;
 				}
 			}
+			if(res == -1) res = 0;
 			nxt_non_zero[i] = res;
 		}
 	}
