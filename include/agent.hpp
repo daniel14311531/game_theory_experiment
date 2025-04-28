@@ -66,7 +66,9 @@ public:
 
 class AgentSG : public Agent {
 protected:
+	// a substate with sg function value 0
 	int nxt_non_zero[full_state];
+	// the probability of the non-zero substate
 	double non_zero_prob[full_state];
 
 public:
